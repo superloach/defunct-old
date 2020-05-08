@@ -4,7 +4,7 @@ an esoteric language based around Functs
 ## basic spec
 ### Funct
 everything is one of these. in Go, this is the following interface:
-```
+```go
 type Funct interface {
 	Call(args []Funct) Funct
 	GetProp(name string) Funct
