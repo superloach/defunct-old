@@ -30,7 +30,7 @@ _[X Y Z] -> X, after setting its property named by Y to the value Z
 also does special things when used on itself:
 ```
 _[_ X] -> returns the stdlib Funct named by X
-_[_ ./X] -> loads and returns the Funct in the file ./X.df
+_[_ .X] -> loads and returns the Funct in the file ./X.df
 ```
 
 ## other builtins
@@ -47,3 +47,18 @@ a basic key-value map (a Go `map[string]Funct`).
 
 ### Zilch
 no value, does nothing but return itself.
+
+## multi-file system
+each Defunct (`.df`) file contains a series of lines, each of which are made up of chained or nested Funct calls.
+
+across all of these lines, the Under instance referred to by `_` is the same. ideally, all instances of Zilch will be the same, but that's not required.
+
+when you use `_[_ ./X]`, a Funct referencing the file `./X.df` is loaded. calling this Funct executes the whole file, with the arguments passed to the first line. the last line gives the return value.
+
+similarly, when a Defunct file is run with the interpreter, leftover command-line arguments are passed to the first line.
+
+## roadmap
+ - [x] define basic Funct types
+ - [ ] implement parser
+ - [ ] implement interpreter
+ - [ ] possibly generate go code?
