@@ -2,13 +2,23 @@
 an esoteric language based around Functs
 
 ## basic spec
-everything is a Funct
+### Funct
+everything is one of these. in Go, this is the following interface:
+```
+type Funct interface {
+	Call(args []Funct) Funct
+	GetProp(name string) Funct
+	SetProp(name string, val Funct) Funct
+	String() string
+}
+```
 
-there are 2 kinds of functs you can actually use in programs, Strings and Under
+### String
+a Funct containing a series of characters, preferably UTF-8.
+declared with any text that isn't `_`, `[`, or `]` (you can escape these with `~`).
 
-Strings are just any text that isn't `_`, `[`, or `]` (you can escape with `~`)
-
-Under is a sort of predefined, global, magic Funct. it behaves as such:
+### Under
+a sort of predefined, global, magic Funct. it behaves as such:
 ```
 _[] -> Zilch
 _[X] -> String representation of X
@@ -16,7 +26,7 @@ _[X Y] -> X's property named by Y
 _[X Y Z] -> X, after setting its property named by Y to the value Z
 ```
 
-Under also does special things when used on itself:
+also does special things when used on itself:
 ```
 _[_ X] -> returns the stdlib Funct named by X
 _[_ ./X] -> loads and returns the Funct in the file ./X.df
