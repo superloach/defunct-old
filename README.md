@@ -21,3 +21,18 @@ Under also does special things when used on itself:
 _[_ X] -> returns the stdlib Funct named by X
 _[_ ./X] -> loads and returns the Funct in the file ./X.df
 ```
+
+## other builtins
+there are other builtin types used by some implementations:
+
+### Error
+basically a String, but indicates that an error has occurred (implements a Go `error`)
+
+### Native
+a basic function (a Go `func(args []Funct) Funct`)
+
+### Thing
+a basic key-value map (a Go `map[string]Funct`)
+
+### Zilch
+no value, does nothing but return itself
