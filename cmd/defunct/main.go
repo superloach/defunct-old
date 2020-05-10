@@ -37,8 +37,8 @@ func main() {
 		args[strconv.Itoa(i)] = functs.String(oarg)
 	}
 
-	env := &defunct.Env{}
-	under, err := env.RunProg(string(code), args)
+	arena := &defunct.Arena{}
+	under, err := arena.RunProg(string(code), args)
 	if err != nil {
 		panic(err)
 	}

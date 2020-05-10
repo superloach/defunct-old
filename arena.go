@@ -4,14 +4,15 @@ import (
 	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
+
 	"github.com/superloach/defunct/debug"
 	"github.com/superloach/defunct/functs"
 	"github.com/superloach/defunct/parser"
 )
 
-type Env struct{}
+type Arena struct{}
 
-func (e *Env) RunProg(code string, in functs.Thing) (*functs.Under, error) {
+func (a *Arena) RunProg(code string, in functs.Thing) (*functs.Under, error) {
 	under := &functs.Under{
 		In: in,
 	}
