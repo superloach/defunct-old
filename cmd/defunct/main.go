@@ -7,21 +7,26 @@ import (
 	"strconv"
 
 	"github.com/superloach/defunct"
-	"github.com/superloach/defunct/debug"
 	"github.com/superloach/defunct/functs"
 )
 
-func init() {
-	flag.BoolVar(&debug.Debug, "debug", false, "print debug messages")
-}
+var (
+	debug = flag.Bool("debug", false, "print debug messages")
+)
 
 func main() {
 	flag.Parse()
 	oargs := flag.Args()
 
-	fn := oargs[0]
+	args := make(functs.Thing)
+	for i, oarg := range oargs {
+		args[strconv.Itoa(i)] = functs.String(oarg)
+	}
 
-	f, err := os.Open(fn)
+	arena := defunct.NewArena(args)
+	arena.Debug = *debug
+
+	f, err := os.Open(oargs[0])
 	if err != nil {
 		panic(err)
 	}
@@ -30,17 +35,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	debug.Debugf("%#v\n", string(code))
+	arena.Debugf("%#v\n", string(code))
 
-	args := make(functs.Thing)
-	for i, oarg := range oargs {
-		args[strconv.Itoa(i)] = functs.String(oarg)
-	}
-
-	arena := &defunct.Arena{}
-	under, err := arena.RunProg(string(code), args)
+	out, err := arena.RunString(string(code))
 	if err != nil {
 		panic(err)
 	}
-	debug.Debugf("%s\n", under)
+	arena.Debugf("%s\n", out)
 }

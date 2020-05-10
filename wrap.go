@@ -3,17 +3,20 @@ package defunct
 import (
 	"fmt"
 
-	"github.com/superloach/defunct/debug"
 	"github.com/superloach/defunct/functs"
 )
 
 type Args []*Wrap
 
 func (a *Args) String() string {
-	return fmt.Sprint(*a)
+	if *a == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("%s", *a)
 }
 
 type Wrap struct {
+	Arena  *Arena
 	Funct  functs.Funct
 	Argss  []*Args
 	Parent *Wrap
@@ -36,25 +39,24 @@ func (w *Wrap) String() string {
 }
 
 func (w *Wrap) Run() (functs.Funct, error) {
-	debug.Debugf("run %s\n", w)
-
 	if w == nil {
-		debug.Debugf("nil wrap -> Zilch\n")
 		return functs.Zilch, nil
 	}
 
+	w.Arena.Debugf("run %s\n", w)
+
 	if w.Argss == nil {
-		debug.Debugf("nil args -> %s\n", w.Funct)
+		w.Arena.Debugf("nil args -> %s\n", w.Funct)
 		return w.Funct, nil
 	}
 
 	if len(w.Argss) == 0 {
-		debug.Debugf("zero args -> %s\n", w.Funct)
+		w.Arena.Debugf("zero args -> %s\n", w.Funct)
 		return w.Funct, nil
 	}
 
 	if w.Funct == nil {
-		debug.Debugf("nil funct -> Zilch\n")
+		w.Arena.Debugf("nil funct -> Zilch\n")
 		return functs.Zilch, nil
 	}
 
@@ -69,10 +71,10 @@ func (w *Wrap) Run() (functs.Funct, error) {
 			args[i] = arg
 		}
 
-		debug.Debugf("%s %s\n", funct, args)
+		w.Arena.Debugf("%s %s\n", funct, args)
 		funct = funct.Call(args)
 
-		debug.Debugf(" -> %s\n", funct)
+		w.Arena.Debugf(" -> %s\n", funct)
 
 		switch funct.(type) {
 		case nil:

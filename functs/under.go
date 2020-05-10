@@ -2,16 +2,22 @@ package functs
 
 import (
 	"fmt"
-
-	"github.com/superloach/defunct/debug"
 )
 
 type Under struct {
-	In Funct
+	In    Funct
+	Out   Funct
+	Debug *bool
+}
+
+func (u *Under) Debugf(f string, args ...interface{}) {
+	if *u.Debug {
+		fmt.Printf(f, args...)
+	}
 }
 
 func (u *Under) Call(args []Funct) Funct {
-	debug.Debugf("under call %s\n", args)
+	u.Debugf("under call %s\n", args)
 
 	switch len(args) {
 	case 0:
@@ -28,7 +34,7 @@ func (u *Under) Call(args []Funct) Funct {
 }
 
 func (u *Under) GetProp(name string) Funct {
-	debug.Debugf("under getprop %#v\n", name)
+	u.Debugf("under getprop %#v\n", name)
 
 	switch name {
 	case "in":
@@ -49,7 +55,7 @@ func (u *Under) GetProp(name string) Funct {
 			return Zilch
 		})
 	default:
-		debug.Debugf("TODO: Under get prop")
+		u.Debugf("TODO: Under get prop\n")
 		return Zilch
 	}
 }
@@ -60,7 +66,7 @@ func (u *Under) SetProp(name string, val Funct) Funct {
 		u.In = val
 		return u
 	default:
-		debug.Debugf("TODO: Under set prop")
+		u.Debugf("TODO: Under set prop\n")
 		return Zilch
 	}
 }
