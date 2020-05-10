@@ -53,9 +53,9 @@ each Defunct (`.df`) file contains a series of lines, each of which are made up 
 
 across all of these lines, the Under instance referred to by `_` is the same. ideally, all instances of Zilch will be the same, but that's not required.
 
-when you use `_[_ .X]`, a Funct referencing the file `./X.df` is loaded. calling this Funct executes the whole file, with the arguments passed to the first line. the last line gives the return value.
+when you use `_[_ .X]`, a Funct referencing the file `./X.df` is loaded. calling this Funct executes the whole file, with the arguments passed as `_[_ in]`. the return value is set with `_[_ out]`.
 
-similarly, when a Defunct file is run with the interpreter, leftover command-line arguments are passed to the first line.
+similarly, when a Defunct file is run with the interpreter, leftover command-line arguments are passed as `_[_ in]`, and setting `_[_ out]` allows a value to be printed after executing the file.
 
 ## roadmap
  - [x] define basic Funct types
