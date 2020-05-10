@@ -4,12 +4,12 @@ type String string
 
 func (s String) Call(args []Funct) Funct {
 	println("TODO: String formatter")
-	return Zilch{}
+	return Zilch
 }
 
 func (s String) GetProp(name string) Funct {
 	println("TODO: methods on String")
-	return Zilch{}
+	return Zilch
 }
 
 func (s String) SetProp(name string, val Funct) Funct {

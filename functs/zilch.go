@@ -1,19 +1,21 @@
 package functs
 
-type Zilch struct{}
+type ZilchType struct{}
 
-func (z Zilch) Call(args []Funct) Funct {
+func (z ZilchType) Call(args []Funct) Funct {
 	return z
 }
 
-func (z Zilch) GetProp(name string) Funct {
+func (z ZilchType) GetProp(name string) Funct {
 	return z
 }
 
-func (z Zilch) SetProp(name string, val Funct) Funct {
+func (z ZilchType) SetProp(name string, val Funct) Funct {
 	return z
 }
 
-func (z Zilch) String() string {
+func (z ZilchType) String() string {
 	return "{Zilch}"
 }
+
+var Zilch = ZilchType{}

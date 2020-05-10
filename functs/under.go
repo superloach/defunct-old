@@ -1,15 +1,21 @@
 package functs
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/superloach/defunct/debug"
+)
 
 type Under struct {
-	Args Funct
+	In Funct
 }
 
 func (u *Under) Call(args []Funct) Funct {
+	debug.Debugf("under call %s\n", args)
+
 	switch len(args) {
 	case 0:
-		return Zilch{}
+		return Zilch
 	case 1:
 		return String(args[0].String())
 	case 2:
@@ -22,11 +28,11 @@ func (u *Under) Call(args []Funct) Funct {
 }
 
 func (u *Under) GetProp(name string) Funct {
-	println("getprop", name)
+	debug.Debugf("under getprop %#v\n", name)
 
 	switch name {
-	case "args":
-		return u.Args
+	case "in":
+		return u.In
 	case "print":
 		return Native(func(args []Funct) Funct {
 			iargs := make([]interface{}, len(args))
@@ -40,22 +46,22 @@ func (u *Under) GetProp(name string) Funct {
 
 			fmt.Println(iargs...)
 
-			return Zilch{}
+			return Zilch
 		})
 	default:
-		println("TODO: Under get prop")
-		return Zilch{}
+		debug.Debugf("TODO: Under get prop")
+		return Zilch
 	}
 }
 
 func (u *Under) SetProp(name string, val Funct) Funct {
 	switch name {
 	case "args":
-		u.Args = val
+		u.In = val
 		return u
 	default:
-		println("TODO: Under set prop")
-		return Zilch{}
+		debug.Debugf("TODO: Under set prop")
+		return Zilch
 	}
 }
 

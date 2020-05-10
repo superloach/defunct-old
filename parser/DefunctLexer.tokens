@@ -1,0 +1,9 @@
+UNDER=1
+OPEN=2
+CLOSE=3
+STR=4
+NEWLINE=5
+WHITESPACE=6
+'_'=1
+'['=2
+']'=3

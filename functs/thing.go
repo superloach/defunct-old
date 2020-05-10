@@ -21,7 +21,7 @@ func (t Thing) GetProp(name string) Funct {
 	if p, ok := t[name]; ok {
 		return p
 	}
-	return Zilch{}
+	return Zilch
 }
 
 func (t Thing) SetProp(name string, val Funct) Funct {
