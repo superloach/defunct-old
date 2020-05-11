@@ -3,8 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path"
 	"strconv"
+	"strings"
 
 	"github.com/superloach/defunct/functs"
 	"github.com/superloach/defunct/module"
@@ -23,6 +26,7 @@ func debugf(f string, args ...interface{}) {
 func main() {
 	flag.Parse()
 	oargs := flag.Args()
+	fpath := oargs[0]
 
 	args := make(functs.Thing)
 	for i, oarg := range oargs {
@@ -30,25 +34,47 @@ func main() {
 	}
 	debugf("%s\n", args)
 
-	info, err := os.Stat(oargs[0])
+	info, err := os.Stat(fpath)
 	if err != nil {
 		panic(err)
 	}
+
+	var mod *module.Module
+
 	if info.IsDir() {
-		mod, err := module.LoadModule(oargs[0], debugf)
+		mod, err = module.LoadModule(fpath, debugf)
 		if err != nil {
 			panic(err)
 		}
 		debugf("%s\n", mod)
+	} else {
+		_, fname := path.Split(fpath)
+		name := strings.ToLower(fname[:len(fname)-3])
 
-		out, err := mod.Run(args)
-
+		f, err := os.Open(fpath)
 		if err != nil {
 			panic(err)
 		}
 
-		debugf("%s\n", out)
-	} else {
-		panic("single file stub")
+		code, err := ioutil.ReadAll(f)
+		if err != nil {
+			panic(err)
+		}
+
+		mod = &module.Module{
+			Name:   "single-file",
+			Files:  make(functs.Thing),
+			Debugf: debugf,
+		}
+
+		mod.Files["_"] = module.LoadFile(mod, fpath, name, string(code), debugf)
 	}
+
+	out, err := mod.Run(args)
+
+	if err != nil {
+		panic(err)
+	}
+
+	debugf("%s\n", out)
 }
