@@ -1,14 +1,14 @@
-package liner
+package parser
 
 import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/superloach/defunct/parser"
+	"github.com/superloach/defunct/parser/parser"
 )
 
-func LoadLines(
+func ParseLines(
 	code string,
 	debugf func(string, ...interface{}),
-) *Liner {
+) *Listener {
 	is := antlr.NewInputStream(code)
 
 	lexer := parser.NewDefunctLexer(is)
@@ -16,7 +16,7 @@ func LoadLines(
 
 	p := parser.NewDefunctParser(stream)
 
-	l := &Liner{
+	l := &Listener{
 		Debugf: debugf,
 	}
 

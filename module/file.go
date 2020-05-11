@@ -1,7 +1,7 @@
 package module
 
 import (
-	"github.com/superloach/defunct/liner"
+	"github.com/superloach/defunct/parser"
 	"github.com/superloach/defunct/types"
 )
 
@@ -9,7 +9,7 @@ type File struct {
 	Module *Module
 	Path   string
 	Name   string
-	Liner  *liner.Liner
+	Parser *parser.Listener
 	Debugf func(string, ...interface{})
 }
 
@@ -23,18 +23,18 @@ func LoadFile(
 		Module: mod,
 		Path:   path,
 		Name:   name,
-		Liner:  liner.LoadLines(code, debugf),
+		Parser: parser.ParseLines(code, debugf),
 		Debugf: debugf,
 	}
-	debugf("loaded %s\n", file.Liner)
+	debugf("loaded %s\n", file.Parser)
 	return file
 }
 
 func (f *File) Call(under types.Funct, args []types.Funct) types.Funct {
-	f.Debugf("liner %#v\n", f.Liner)
-	f.Debugf("lines %#v\n", f.Liner.Lines)
+	f.Debugf("parser %#v\n", f.Parser)
+	f.Debugf("lines %#v\n", f.Parser.Lines)
 
-	for _, line := range f.Liner.Lines {
+	for _, line := range f.Parser.Lines {
 		f.Debugf("line %#v\n", line)
 		_, err := line.Run(under)
 		if err != nil {

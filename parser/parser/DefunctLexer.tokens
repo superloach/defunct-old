@@ -1,0 +1,12 @@
+UNDER=1
+OPEN=2
+CLOSE=3
+ESC=4
+WS=5
+ESCD=6
+CHAR=7
+STR=8
+'_'=1
+'['=2
+']'=3
+'~'=4
