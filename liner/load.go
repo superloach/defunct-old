@@ -5,11 +5,11 @@ import (
 	"github.com/superloach/defunct/parser"
 )
 
-func LoadLine(
-	line string,
+func LoadLines(
+	code string,
 	debugf func(string, ...interface{}),
 ) *Liner {
-	is := antlr.NewInputStream(line)
+	is := antlr.NewInputStream(code)
 
 	lexer := parser.NewDefunctLexer(is)
 	stream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
@@ -20,7 +20,9 @@ func LoadLine(
 		Debugf: debugf,
 	}
 
+	debugf("parsing\n")
 	antlr.ParseTreeWalkerDefault.Walk(l, p.Start())
+	debugf("parsed\n")
 
 	return l
 }

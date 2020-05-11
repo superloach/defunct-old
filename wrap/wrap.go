@@ -46,16 +46,16 @@ func (w *Wrap) Run(under types.Funct) (types.Funct, error) {
 
 	w.Debugf("run %s\n", w)
 
-	if w.Argss == nil {
-		w.Debugf("nil args -> %s\n", w.Funct)
-		return w.Funct, nil
-	}
+	/*	if w.Argss == nil {
+			w.Debugf("nil args -> %s\n", w.Funct)
+			return w.Funct, nil
+		}
 
-	if len(w.Argss) == 0 {
-		w.Debugf("zero args -> %s\n", w.Funct)
-		return w.Funct, nil
-	}
-
+		if len(w.Argss) == 0 {
+			w.Debugf("zero args -> %s\n", w.Funct)
+			return w.Funct, nil
+		}
+	*/
 	if w.Funct == nil {
 		w.Debugf("nil funct -> Zilch\n")
 		return types.Zilch, nil

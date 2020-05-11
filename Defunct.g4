@@ -5,12 +5,15 @@ grammar Defunct;
 UNDER: '_';
 OPEN: '[';
 CLOSE: ']';
-STR: ('~'. | ~[_[\] \r\n\t])+;
-NEWLINE: [\r\n]+;
-WHITESPACE: [ \t]+ -> skip;
+ESC: '~';
+WS: [ \t\n];
+ESCD: ESC ('_' | '[' | ']' | '~' | [ \t\n]);
+CHAR: ~ ('_' | '[' | ']' | '~' | [ \t\n]);
+STR: (ESCD | CHAR)+;
 
 // Rules
-start: EOF|(wrap EOF);
-funct: UNDER|STR;
-args: OPEN wrap* CLOSE;
+start: (line WS*)* EOF;
+line: wrap;
 wrap: funct args*;
+funct: UNDER|STR;
+args: OPEN (wrap (WS+ wrap)*)? CLOSE;

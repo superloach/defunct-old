@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/superloach/defunct/module"
 	"github.com/superloach/defunct/types"
@@ -55,26 +54,33 @@ func main() {
 		debugf("%s\n", mod)
 	} else {
 		_, fname := filepath.Split(fpath)
-		name := strings.ToLower(fname[:len(fname)-3])
+		debugf("%s\n", fname)
 
 		f, err := os.Open(fpath)
 		if err != nil {
 			panic(err)
 		}
+		debugf("opened %s\n", fpath)
 
 		code, err := ioutil.ReadAll(f)
 		if err != nil {
 			panic(err)
 		}
+		debugf("%#v\n", string(code))
 
 		mod = &module.Module{
-			Name:   "single-file",
+			Name:   "",
+			Path:   fpath,
 			Files:  make(types.Thing),
 			Debugf: debugf,
 		}
+		debugf("%s\n", mod)
 
-		mod.Files["_"] = module.LoadFile(mod, fpath, name, string(code), debugf)
+		mod.Files["_"] = module.LoadFile(mod, fpath, fname, string(code), debugf)
+		debugf("%s\n", mod.Files)
 	}
+
+	debugf("mod %s\n", mod)
 
 	out, err := mod.Run(args)
 

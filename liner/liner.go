@@ -1,6 +1,7 @@
 package liner
 
 import (
+	"github.com/antlr/antlr4/runtime/Go/antlr"
 	"github.com/superloach/defunct/parser"
 	"github.com/superloach/defunct/types"
 	"github.com/superloach/defunct/wrap"
@@ -12,10 +13,41 @@ const (
 )
 
 type Liner struct {
-	*parser.BaseDefunctListener
+	//*parser.BaseDefunctListener
 
 	Debugf func(string, ...interface{})
+	Lines  []*wrap.Wrap
 	Wrap   *wrap.Wrap
+}
+
+func (l *Liner) VisitTerminal(node antlr.TerminalNode) {
+	l.Debugf("%#v\n", node)
+}
+
+func (l *Liner) VisitErrorNode(node antlr.ErrorNode) {
+	l.Debugf("%#v\n", node)
+}
+
+func (l *Liner) EnterEveryRule(ctx antlr.ParserRuleContext) {
+	l.Debugf("%#v\n", ctx)
+}
+
+func (l *Liner) ExitEveryRule(ctx antlr.ParserRuleContext) {
+	l.Debugf("%#v\n", ctx)
+}
+
+func (l *Liner) EnterStart(c *parser.StartContext) {
+	t := c.GetText()
+	l.Debugf(f1, "enter start", t, l.Wrap)
+
+	l.Lines = make([]*wrap.Wrap, 0)
+}
+
+func (l *Liner) EnterLine(c *parser.LineContext) {
+	t := c.GetText()
+	l.Debugf(f1, "enter line", t, l.Wrap)
+
+	l.Wrap = nil
 }
 
 func (l *Liner) EnterFunct(c *parser.FunctContext) {
@@ -68,6 +100,22 @@ func (l *Liner) EnterWrap(c *parser.WrapContext) {
 		*args = append(*args, nc)
 	}
 	l.Wrap = nc
+
+	l.Debugf(f2, l.Wrap)
+}
+
+func (l *Liner) ExitStart(c *parser.StartContext) {
+	t := c.GetText()
+	l.Debugf(f1, "exit start", t, l.Wrap)
+
+	l.Debugf(f2, l.Wrap)
+}
+
+func (l *Liner) ExitLine(c *parser.LineContext) {
+	t := c.GetText()
+	l.Debugf(f1, "exit line", t, l.Wrap)
+
+	l.Lines = append(l.Lines, l.Wrap)
 
 	l.Debugf(f2, l.Wrap)
 }

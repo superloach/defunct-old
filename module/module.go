@@ -121,6 +121,7 @@ func (m *Module) Run(in types.Funct) (types.Funct, error) {
 
 func (m *Module) Call(under types.Funct, args []types.Funct) types.Funct {
 	main := m.Files.GetProp(under, "_")
+	m.Debugf("main %s\n", main)
 
 	under.SetProp(under, "mod", m)
 	under.SetProp(under, "file", main)

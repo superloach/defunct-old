@@ -1,5 +1,6 @@
 # generated code
 /stdlib/statik
+/parser
 
 # Binaries for programs and plugins
 *.exe
