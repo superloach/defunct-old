@@ -8,21 +8,24 @@ import (
 )
 
 type File struct {
-	Path  string
-	Name  string
-	Lines []*liner.Liner
+	Module *Module
+	Path   string
+	Name   string
+	Lines  []*liner.Liner
 }
 
 func LoadFile(
+	mod *Module,
 	path, name, code string,
 	debugf func(string, ...interface{}),
 ) *File {
 	lines := strings.Split(code, "\n")
 
 	file := &File{
-		Path:  path,
-		Name:  name,
-		Lines: make([]*liner.Liner, len(lines)),
+		Module: mod,
+		Path:   path,
+		Name:   name,
+		Lines:  make([]*liner.Liner, len(lines)),
 	}
 
 	for i, line := range lines {

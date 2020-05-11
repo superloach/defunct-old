@@ -5,8 +5,8 @@ import (
 )
 
 type Under struct {
-	In     Funct
-	Out    Funct
+	Builtin Thing
+
 	Debugf func(string, ...interface{})
 }
 
@@ -39,8 +39,6 @@ func (u *Under) GetProp(under Funct, name string) Funct {
 	u.Debugf("under getprop %#v\n", name)
 
 	switch name {
-	case "in":
-		return u.In
 	case "print":
 		return &Native{
 			CallFn: func(under Funct, args []Funct) Funct {
@@ -59,22 +57,17 @@ func (u *Under) GetProp(under Funct, name string) Funct {
 			},
 		}
 	default:
-		u.Debugf("TODO: Under get prop\n")
-		return Zilch
+		return u.Builtin.GetProp(under, name)
 	}
 }
 
 func (u *Under) SetProp(under Funct, name string, val Funct) Funct {
 	switch name {
-	case "args":
-		u.In = val
-		return u
 	default:
-		u.Debugf("TODO: Under set prop\n")
-		return Zilch
+		return u.Builtin.SetProp(under, name, val)
 	}
 }
 
 func (u *Under) String() string {
-	return "{Under " + u.In.String() + " " + u.Out.String() + "}"
+	return "{Under}"
 }

@@ -62,7 +62,7 @@ func LoadModule(
 				return m, err
 			}
 
-			m.Files[name] = LoadFile(fpath, name, string(code), debugf)
+			m.Files[name] = LoadFile(m, fpath, name, string(code), debugf)
 		}
 	}
 
@@ -71,30 +71,34 @@ func LoadModule(
 
 func (m *Module) Run(in functs.Funct) (functs.Funct, error) {
 	under := &functs.Under{
-		In:     in,
-		Out:    functs.Zilch,
+		Builtin: functs.Thing{
+			"in": in,
+		},
 		Debugf: m.Debugf,
 	}
 	m.Debugf("under %s\n", under)
 
-	main := m.Files.GetProp(under, "_")
-	m.Debugf("main %s\n", main)
-
-	res := main.Call(under, make([]functs.Funct, 0))
+	res := m.Call(under, make([]functs.Funct, 0))
+	out := under.GetProp(under, "out")
 
 	if err, ok := res.(error); ok {
-		return under.Out, err
+		return out, err
 	}
 
-	if err, ok := under.Out.(error); ok {
-		return under.Out, err
+	if err, ok := out.(error); ok {
+		return out, err
 	}
 
-	return under.Out, nil
+	return out, nil
 }
 
 func (m *Module) Call(under functs.Funct, args []functs.Funct) functs.Funct {
-	return m.Files.GetProp(under, "_").Call(under, args)
+	main := m.Files.GetProp(under, "_")
+
+	under.SetProp(under, "mod", m)
+	under.SetProp(under, "file", main)
+
+	return main.Call(under, args)
 }
 
 func (m *Module) GetProp(under functs.Funct, name string) functs.Funct {
