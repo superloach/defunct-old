@@ -3,82 +3,109 @@ package module
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 
-	"github.com/superloach/defunct/functs"
+	"github.com/superloach/defunct/builtins"
+	"github.com/superloach/defunct/types"
 )
 
 type Module struct {
 	Name   string
-	Files  functs.Thing
+	Path   string
+	Files  types.Thing
 	Debugf func(string, ...interface{})
 }
 
 func LoadModule(
-	mod string,
+	mod string, // @foo/bar/baz
 	debugf func(string, ...interface{}),
 ) (*Module, error) {
 	if len(mod) == 0 {
 		return nil, fmt.Errorf("zero len mod")
 	}
 
-	split := strings.Split(mod, "/")
-	pmod := path.Join(split...)
-	mname := split[len(split)-1]
+	_, modn := path.Split(mod)
 
 	m := &Module{
-		Name:   mname,
-		Files:  make(functs.Thing),
+		Name:   modn, // baz
+		Path:   mod,  // @foo/bar/baz
+		Files:  make(types.Thing),
 		Debugf: debugf,
 	}
 
-	if mod[0] == '@' {
-		panic("pkger stub")
+	isstd := mod[0] == '@'
+	if isstd {
+		debugf("isstd\n")
+	}
+
+	var dirn string
+	var dir http.File
+	var err error
+	if isstd {
+		dirn = "/" + mod[1:]
+		dir, err = Stdlib.Open(dirn) // /foo/bar/baz
 	} else {
-		dir, err := os.Open(pmod)
+		dirn = filepath.Join(strings.Split(mod, "/")...)
+		dir, err = os.Open(dirn)
+	}
+	debugf("%s\n", dirn)
+	if err != nil {
+		return m, err
+	}
+
+	finfos, err := dir.Readdir(-1)
+	if err != nil {
+		return m, err
+	}
+
+	for _, finfo := range finfos {
+		fname := finfo.Name()
+
+		if !strings.HasSuffix(fname, ".df") {
+			continue
+		}
+
+		name := fname[:len(fname)-3]
+		fpath := path.Join(dirn, fname)
+
+		var f http.File
+		if isstd {
+			f, err = Stdlib.Open(fpath)
+		} else {
+			f, err = os.Open(fpath)
+		}
 		if err != nil {
 			return m, err
 		}
 
-		fnames, err := dir.Readdirnames(-1)
-
-		for _, fname := range fnames {
-			if !strings.HasSuffix(fname, ".df") {
-				continue
-			}
-
-			name := strings.ToLower(fname[:len(fname)-3])
-			fpath := path.Join(pmod, fname)
-
-			f, err := os.Open(fpath)
-			if err != nil {
-				return m, err
-			}
-
-			code, err := ioutil.ReadAll(f)
-			if err != nil {
-				return m, err
-			}
-
-			m.Files[name] = LoadFile(m, fpath, name, string(code), debugf)
+		code, err := ioutil.ReadAll(f)
+		if err != nil {
+			return m, err
 		}
+
+		m.Files[name] = LoadFile(m, fpath, name, string(code), debugf)
 	}
 
 	return m, nil
 }
 
-func (m *Module) Run(in functs.Funct) (functs.Funct, error) {
-	under := &functs.Under{
-		Builtin: functs.Thing{
+func (m *Module) Run(in types.Funct) (types.Funct, error) {
+	under := &types.Under{
+		Arbitrary: types.Thing{
 			"in": in,
 		},
-		Debugf: m.Debugf,
+		Builtins: builtins.Builtins,
+		Modules:  types.Zilch,
+		Debugf:   m.Debugf,
 	}
+
 	m.Debugf("under %s\n", under)
 
-	res := m.Call(under, make([]functs.Funct, 0))
+	res := m.Call(under, make([]types.Funct, 0))
 	out := under.GetProp(under, "out")
 
 	if err, ok := res.(error); ok {
@@ -92,7 +119,7 @@ func (m *Module) Run(in functs.Funct) (functs.Funct, error) {
 	return out, nil
 }
 
-func (m *Module) Call(under functs.Funct, args []functs.Funct) functs.Funct {
+func (m *Module) Call(under types.Funct, args []types.Funct) types.Funct {
 	main := m.Files.GetProp(under, "_")
 
 	under.SetProp(under, "mod", m)
@@ -101,14 +128,14 @@ func (m *Module) Call(under functs.Funct, args []functs.Funct) functs.Funct {
 	return main.Call(under, args)
 }
 
-func (m *Module) GetProp(under functs.Funct, name string) functs.Funct {
+func (m *Module) GetProp(under types.Funct, name string) types.Funct {
 	return m.Files.GetProp(under, name)
 }
 
-func (m *Module) SetProp(under functs.Funct, name string, val functs.Funct) functs.Funct {
+func (m *Module) SetProp(under types.Funct, name string, val types.Funct) types.Funct {
 	return m.Files.SetProp(under, name, val)
 }
 
 func (m *Module) String() string {
-	return "{Module " + m.Name + " " + m.Files.String() + "}"
+	return "{Module " + m.Name + " (" + m.Path + ")}"
 }

@@ -62,3 +62,14 @@ similarly, when a Defunct file is run with the interpreter, leftover command-lin
  - [ ] implement parser
  - [ ] implement interpreter
  - [ ] possibly generate go code?
+
+## build instructions
+### generated code
+requires [antlr4](https://github.com/antlr/antlr4) and [statik](github.com/rakyll/statik) to be installed
+```bash
+go generate .
+```
+### build the tool
+```bash
+go build ./cmd/defunct
+```

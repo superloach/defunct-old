@@ -1,4 +1,4 @@
-package functs
+package types
 
 type Funct interface {
 	Call(under Funct, args []Funct) Funct

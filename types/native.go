@@ -1,4 +1,4 @@
-package functs
+package types
 
 type Native struct {
 	CallFn    func(under Funct, args []Funct) Funct

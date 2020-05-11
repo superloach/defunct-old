@@ -3,8 +3,8 @@ package module
 import (
 	"strings"
 
-	"github.com/superloach/defunct/functs"
 	"github.com/superloach/defunct/liner"
+	"github.com/superloach/defunct/types"
 )
 
 type File struct {
@@ -35,22 +35,22 @@ func LoadFile(
 	return file
 }
 
-func (f *File) Call(under functs.Funct, args []functs.Funct) functs.Funct {
+func (f *File) Call(under types.Funct, args []types.Funct) types.Funct {
 	for _, line := range f.Lines {
 		_, err := line.Wrap.Run(under)
 		if err != nil {
-			return functs.Error(err.Error())
+			return types.Error(err.Error())
 		}
 	}
 
 	return under.GetProp(under, "out")
 }
 
-func (f *File) GetProp(under functs.Funct, name string) functs.Funct {
+func (f *File) GetProp(under types.Funct, name string) types.Funct {
 	return under.GetProp(under, name)
 }
 
-func (f *File) SetProp(under functs.Funct, name string, val functs.Funct) functs.Funct {
+func (f *File) SetProp(under types.Funct, name string, val types.Funct) types.Funct {
 	return under.SetProp(under, name, val)
 }
 

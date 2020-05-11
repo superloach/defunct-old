@@ -5,17 +5,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 
-	"github.com/superloach/defunct/functs"
 	"github.com/superloach/defunct/module"
+	"github.com/superloach/defunct/types"
 )
 
-var (
-	debug = flag.Bool("debug", false, "print debug messages")
-)
+var debug = flag.Bool("debug", false, "print debug messages")
 
 func debugf(f string, args ...interface{}) {
 	if *debug {
@@ -24,31 +22,39 @@ func debugf(f string, args ...interface{}) {
 }
 
 func main() {
+	flag.Usage = func() {
+		fmt.Printf("Usage: defunct [flags] (file or module)\n")
+		flag.PrintDefaults()
+	}
+
 	flag.Parse()
 	oargs := flag.Args()
+
+	if len(oargs) == 0 {
+		flag.Usage()
+		return
+	}
+
 	fpath := oargs[0]
 
-	args := make(functs.Thing)
+	args := make(types.Thing)
 	for i, oarg := range oargs {
-		args[strconv.Itoa(i)] = functs.String(oarg)
+		args[strconv.Itoa(i)] = types.String(oarg)
 	}
 	debugf("%s\n", args)
 
 	info, err := os.Stat(fpath)
-	if err != nil {
-		panic(err)
-	}
 
 	var mod *module.Module
 
-	if info.IsDir() {
+	if err != nil || info.IsDir() {
 		mod, err = module.LoadModule(fpath, debugf)
 		if err != nil {
 			panic(err)
 		}
 		debugf("%s\n", mod)
 	} else {
-		_, fname := path.Split(fpath)
+		_, fname := filepath.Split(fpath)
 		name := strings.ToLower(fname[:len(fname)-3])
 
 		f, err := os.Open(fpath)
@@ -63,7 +69,7 @@ func main() {
 
 		mod = &module.Module{
 			Name:   "single-file",
-			Files:  make(functs.Thing),
+			Files:  make(types.Thing),
 			Debugf: debugf,
 		}
 

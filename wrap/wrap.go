@@ -3,7 +3,7 @@ package wrap
 import (
 	"fmt"
 
-	"github.com/superloach/defunct/functs"
+	"github.com/superloach/defunct/types"
 )
 
 type Args []*Wrap
@@ -13,7 +13,7 @@ func (a *Args) String() string {
 }
 
 type Wrap struct {
-	Funct  functs.Funct
+	Funct  types.Funct
 	Argss  []*Args
 	Parent *Wrap
 	Debugf func(string, ...interface{})
@@ -35,12 +35,12 @@ func (w *Wrap) String() string {
 	return fmt.Sprintf("%s%s", w.Funct, w.Argss)
 }
 
-func (w *Wrap) Run(under functs.Funct) (functs.Funct, error) {
+func (w *Wrap) Run(under types.Funct) (types.Funct, error) {
 	if w == nil {
-		return functs.Zilch, nil
+		return types.Zilch, nil
 	}
 
-	if _, ok := w.Funct.(*functs.Under); ok {
+	if _, ok := w.Funct.(*types.Under); ok {
 		w.Funct = under
 	}
 
@@ -58,12 +58,12 @@ func (w *Wrap) Run(under functs.Funct) (functs.Funct, error) {
 
 	if w.Funct == nil {
 		w.Debugf("nil funct -> Zilch\n")
-		return functs.Zilch, nil
+		return types.Zilch, nil
 	}
 
-	var funct functs.Funct = w.Funct
+	var funct types.Funct = w.Funct
 	for _, cargs := range w.Argss {
-		args := make([]functs.Funct, len(*cargs))
+		args := make([]types.Funct, len(*cargs))
 		for i, carg := range *cargs {
 			arg, err := carg.Run(under)
 			if err != nil {
@@ -79,9 +79,9 @@ func (w *Wrap) Run(under functs.Funct) (functs.Funct, error) {
 
 		switch funct.(type) {
 		case nil:
-			funct = functs.Zilch
-		case functs.Error:
-			return funct, funct.(functs.Error)
+			funct = types.Zilch
+		case types.Error:
+			return funct, funct.(types.Error)
 		default:
 		}
 	}

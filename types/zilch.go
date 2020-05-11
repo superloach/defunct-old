@@ -1,4 +1,4 @@
-package functs
+package types
 
 type ZilchType struct{}
 

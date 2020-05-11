@@ -1,3 +1,6 @@
+# generated code
+/stdlib/statik
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

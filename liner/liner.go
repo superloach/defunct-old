@@ -1,8 +1,8 @@
 package liner
 
 import (
-	"github.com/superloach/defunct/functs"
 	"github.com/superloach/defunct/parser"
+	"github.com/superloach/defunct/types"
 	"github.com/superloach/defunct/wrap"
 )
 
@@ -23,9 +23,22 @@ func (l *Liner) EnterFunct(c *parser.FunctContext) {
 	l.Debugf(f1, "enter funct", t, l.Wrap)
 
 	if t == "_" {
-		l.Wrap.Funct = &functs.Under{}
+		l.Wrap.Funct = &types.Under{}
 	} else {
-		l.Wrap.Funct = functs.String(t)
+		rs := []rune(t)
+		nrs := make([]rune, 0)
+		num := 0
+		for _, r := range rs {
+			if num == 1 {
+				num = 0
+			}
+			if r == '~' && num == 0 {
+				num = 1
+			} else {
+				nrs = append(nrs, r)
+			}
+		}
+		l.Wrap.Funct = types.String(nrs)
 	}
 
 	l.Debugf(f2, l.Wrap)

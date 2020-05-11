@@ -1,11 +1,9 @@
-package functs
-
-import (
-	"fmt"
-)
+package types
 
 type Under struct {
-	Builtin Thing
+	Arbitrary Thing
+	Builtins  Funct
+	Modules   Funct
 
 	Debugf func(string, ...interface{})
 }
@@ -38,34 +36,25 @@ func (u *Under) Call(under Funct, args []Funct) Funct {
 func (u *Under) GetProp(under Funct, name string) Funct {
 	u.Debugf("under getprop %#v\n", name)
 
-	switch name {
-	case "print":
-		return &Native{
-			CallFn: func(under Funct, args []Funct) Funct {
-				iargs := make([]interface{}, len(args))
-				for i, arg := range args {
-					if s, ok := arg.(String); ok {
-						iargs[i] = string(s)
-					} else {
-						iargs[i] = arg
-					}
-				}
-
-				fmt.Println(iargs...)
-
-				return Zilch
-			},
-		}
-	default:
-		return u.Builtin.GetProp(under, name)
+	if f := u.Arbitrary.GetProp(under, name); f != Zilch {
+		return f
 	}
+
+	if f := u.Builtins.GetProp(under, name); f != Zilch {
+		return f
+	}
+
+	if f := u.Modules.GetProp(under, name); f != Zilch {
+		return f
+	}
+
+	return Zilch
 }
 
 func (u *Under) SetProp(under Funct, name string, val Funct) Funct {
-	switch name {
-	default:
-		return u.Builtin.SetProp(under, name, val)
-	}
+	u.Arbitrary.SetProp(under, name, val)
+
+	return u
 }
 
 func (u *Under) String() string {
