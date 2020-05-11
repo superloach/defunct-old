@@ -2,17 +2,23 @@ package main
 
 import (
 	"flag"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"strconv"
 
-	"github.com/superloach/defunct"
 	"github.com/superloach/defunct/functs"
+	"github.com/superloach/defunct/module"
 )
 
 var (
 	debug = flag.Bool("debug", false, "print debug messages")
 )
+
+func debugf(f string, args ...interface{}) {
+	if *debug {
+		fmt.Printf(f, args...)
+	}
+}
 
 func main() {
 	flag.Parse()
@@ -22,24 +28,27 @@ func main() {
 	for i, oarg := range oargs {
 		args[strconv.Itoa(i)] = functs.String(oarg)
 	}
+	debugf("%s\n", args)
 
-	arena := defunct.NewArena(args)
-	arena.Debug = *debug
-
-	f, err := os.Open(oargs[0])
+	info, err := os.Stat(oargs[0])
 	if err != nil {
 		panic(err)
 	}
+	if info.IsDir() {
+		mod, err := module.LoadModule(oargs[0], debugf)
+		if err != nil {
+			panic(err)
+		}
+		debugf("%s\n", mod)
 
-	code, err := ioutil.ReadAll(f)
-	if err != nil {
-		panic(err)
-	}
-	arena.Debugf("%#v\n", string(code))
+		out, err := mod.Run(args)
 
-	out, err := arena.RunString(string(code))
-	if err != nil {
-		panic(err)
+		if err != nil {
+			panic(err)
+		}
+
+		debugf("%s\n", out)
+	} else {
+		panic("single file stub")
 	}
-	arena.Debugf("%s\n", out)
 }

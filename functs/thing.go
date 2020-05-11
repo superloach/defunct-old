@@ -4,27 +4,27 @@ import "fmt"
 
 type Thing map[string]Funct
 
-func (t Thing) Call(args []Funct) Funct {
+func (t Thing) Call(under Funct, args []Funct) Funct {
 	switch len(args) {
 	case 0:
 		return t
 	case 1:
-		return t.GetProp(args[0].String())
+		return t.GetProp(under, args[0].String())
 	case 2:
-		return t.SetProp(args[0].String(), args[1])
+		return t.SetProp(under, args[0].String(), args[1])
 	default:
 		return Error("too many args to Thing")
 	}
 }
 
-func (t Thing) GetProp(name string) Funct {
+func (t Thing) GetProp(under Funct, name string) Funct {
 	if p, ok := t[name]; ok {
 		return p
 	}
 	return Zilch
 }
 
-func (t Thing) SetProp(name string, val Funct) Funct {
+func (t Thing) SetProp(under Funct, name string, val Funct) Funct {
 	t[name] = val
 	return t
 }

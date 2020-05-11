@@ -4,15 +4,15 @@ import "fmt"
 
 type Error string
 
-func (e Error) Call(args []Funct) Funct {
+func (e Error) Call(under Funct, args []Funct) Funct {
 	return Error("can't call " + e.String())
 }
 
-func (e Error) GetProp(name string) Funct {
+func (e Error) GetProp(under Funct, name string) Funct {
 	return Error("can't get prop on " + e.String())
 }
 
-func (e Error) SetProp(name string, val Funct) Funct {
+func (e Error) SetProp(under Funct, name string, val Funct) Funct {
 	return Error("can't set prop on " + e.String())
 }
 

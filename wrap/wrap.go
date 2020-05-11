@@ -1,4 +1,4 @@
-package defunct
+package wrap
 
 import (
 	"fmt"
@@ -9,17 +9,14 @@ import (
 type Args []*Wrap
 
 func (a *Args) String() string {
-	if *a == nil {
-		return "<nil>"
-	}
 	return fmt.Sprintf("%s", *a)
 }
 
 type Wrap struct {
-	Arena  *Arena
 	Funct  functs.Funct
 	Argss  []*Args
 	Parent *Wrap
+	Debugf func(string, ...interface{})
 }
 
 func (w *Wrap) Args() *Args {
@@ -38,43 +35,47 @@ func (w *Wrap) String() string {
 	return fmt.Sprintf("%s%s", w.Funct, w.Argss)
 }
 
-func (w *Wrap) Run() (functs.Funct, error) {
+func (w *Wrap) Run(under functs.Funct) (functs.Funct, error) {
 	if w == nil {
 		return functs.Zilch, nil
 	}
 
-	w.Arena.Debugf("run %s\n", w)
+	if _, ok := w.Funct.(*functs.Under); ok {
+		w.Funct = under
+	}
+
+	w.Debugf("run %s\n", w)
 
 	if w.Argss == nil {
-		w.Arena.Debugf("nil args -> %s\n", w.Funct)
+		w.Debugf("nil args -> %s\n", w.Funct)
 		return w.Funct, nil
 	}
 
 	if len(w.Argss) == 0 {
-		w.Arena.Debugf("zero args -> %s\n", w.Funct)
+		w.Debugf("zero args -> %s\n", w.Funct)
 		return w.Funct, nil
 	}
 
 	if w.Funct == nil {
-		w.Arena.Debugf("nil funct -> Zilch\n")
+		w.Debugf("nil funct -> Zilch\n")
 		return functs.Zilch, nil
 	}
 
-	funct := w.Funct
+	var funct functs.Funct = w.Funct
 	for _, cargs := range w.Argss {
 		args := make([]functs.Funct, len(*cargs))
 		for i, carg := range *cargs {
-			arg, err := carg.Run()
+			arg, err := carg.Run(under)
 			if err != nil {
 				return nil, err
 			}
 			args[i] = arg
 		}
 
-		w.Arena.Debugf("%s %s\n", funct, args)
-		funct = funct.Call(args)
+		w.Debugf("%s %s\n", funct, args)
+		funct = funct.Call(under, args)
 
-		w.Arena.Debugf(" -> %s\n", funct)
+		w.Debugf(" -> %s\n", funct)
 
 		switch funct.(type) {
 		case nil:
