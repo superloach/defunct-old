@@ -1,6 +1,8 @@
 package module
 
 import (
+	"strconv"
+
 	"github.com/superloach/defunct/parser"
 	"github.com/superloach/defunct/types"
 )
@@ -31,6 +33,12 @@ func LoadFile(
 }
 
 func (f *File) Call(under types.Funct, args []types.Funct) types.Funct {
+	targs := make(types.Thing)
+	for i, arg := range args {
+		targs[strconv.Itoa(i)] = arg
+	}
+	under.SetProp(under, "in", targs)
+
 	f.Debugf("parser %#v\n", f.Parser)
 	f.Debugf("lines %#v\n", f.Parser.Lines)
 

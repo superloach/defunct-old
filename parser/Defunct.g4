@@ -7,8 +7,8 @@ OPEN: '[';
 CLOSE: ']';
 ESC: '~';
 WS: [ \t\n];
-ESCD: ESC ('_' | '[' | ']' | '~' | [ \t\n]);
-CHAR: ~ ('_' | '[' | ']' | '~' | [ \t\n]);
+fragment ESCD: ESC [_[\]~ \t\n];
+fragment CHAR: ~[_[\]~ \t\n];
 STR: (ESCD | CHAR)+;
 
 // Rules

@@ -32,6 +32,10 @@ func (w *Wrap) Args() *Args {
 }
 
 func (w *Wrap) String() string {
+	if w.Argss == nil {
+		return w.Funct.String()
+	}
+
 	return fmt.Sprintf("%s%s", w.Funct, w.Argss)
 }
 

@@ -12,4 +12,5 @@ var Concat = &types.Native{
 
 		return types.String(s)
 	},
+	StringFn: BuiltinString("Concat"),
 }

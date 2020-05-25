@@ -28,13 +28,8 @@ func LoadModule(
 		return nil, fmt.Errorf("zero len mod")
 	}
 
-	_, modn := path.Split(mod)
-
-	m := &Module{
-		Name:   modn, // baz
-		Path:   mod,  // @foo/bar/baz
-		Files:  make(types.Thing),
-		Debugf: debugf,
+	for strings.Contains(mod, "//") {
+		mod = strings.ReplaceAll(mod, "//", "/")
 	}
 
 	isstd := mod[0] == '@'
@@ -46,6 +41,7 @@ func LoadModule(
 	var dir http.File
 	var err error
 	if isstd {
+		mod = mod[:1] + strings.Trim(mod[1:], "/")
 		dirn = "/" + mod[1:]
 		dir, err = Stdlib.Open(dirn) // /foo/bar/baz
 	} else {
@@ -54,7 +50,16 @@ func LoadModule(
 	}
 	debugf("%s\n", dirn)
 	if err != nil {
-		return m, err
+		return nil, err
+	}
+
+	_, modn := path.Split(mod)
+
+	m := &Module{
+		Name:   modn, // baz
+		Path:   mod,  // @foo/bar/baz
+		Files:  make(types.Thing),
+		Debugf: debugf,
 	}
 
 	finfos, err := dir.Readdir(-1)
@@ -64,17 +69,31 @@ func LoadModule(
 
 	for _, finfo := range finfos {
 		fname := finfo.Name()
+		debugf("fname %s\n", fname)
+
+		fpath := path.Join(dirn, fname)
+		debugf("fpath %s\n", fpath)
+
+		if finfo.IsDir() {
+			dm, err := LoadModule(fpath, debugf)
+			if err != nil {
+				debugf("submod err: %s\n", err)
+				continue
+			}
+			m.Files[finfo.Name()] = dm
+		}
 
 		if !strings.HasSuffix(fname, ".df") {
 			continue
 		}
 
 		name := fname[:len(fname)-3]
-		fpath := path.Join(dirn, fname)
+		debugf("name %s\n", name)
 
 		var f http.File
 		if isstd {
 			f, err = Stdlib.Open(fpath)
+			fpath = "@" + fpath[1:]
 		} else {
 			f, err = os.Open(fpath)
 		}
@@ -93,19 +112,20 @@ func LoadModule(
 	return m, nil
 }
 
-func (m *Module) Run(in types.Funct) (types.Funct, error) {
+func (m *Module) Run(args []types.Funct) (types.Funct, error) {
 	under := &types.Under{
-		Arbitrary: types.Thing{
-			"in": in,
+		Arbitrary: types.Thing{},
+		Builtins:  builtins.Builtins,
+		Modules: &Cache{
+			Module: m,
+			Cache: types.Thing{
+				m.Name: m,
+			},
 		},
-		Builtins: builtins.Builtins,
-		Modules:  types.Zilch,
-		Debugf:   m.Debugf,
+		Debugf: m.Debugf,
 	}
 
-	m.Debugf("under %s\n", under)
-
-	res := m.Call(under, make([]types.Funct, 0))
+	res := m.Call(under, args)
 	out := under.GetProp(under, "out")
 
 	if err, ok := res.(error); ok {
@@ -120,6 +140,8 @@ func (m *Module) Run(in types.Funct) (types.Funct, error) {
 }
 
 func (m *Module) Call(under types.Funct, args []types.Funct) types.Funct {
+	m.Debugf("under %s\n", under)
+
 	main := m.Files.GetProp(under, "_")
 	m.Debugf("main %s\n", main)
 

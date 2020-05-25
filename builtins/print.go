@@ -17,4 +17,5 @@ var Print = &types.Native{
 
 		return types.Zilch
 	},
+	StringFn: BuiltinString("Print"),
 }

@@ -1,3 +1,7 @@
 _[_ print][this is _[_ in][0]]
 _[_ print][this module is _[_ mod]]
 _[_ print][this file is _[_ file]]
+_[_ print][foo is _[_[_ mod] foo]]
+_[_[_ mod] foo][]
+_[_ print][bar is _[_[_ mod] bar]]
+_[_[_ mod] bar][]

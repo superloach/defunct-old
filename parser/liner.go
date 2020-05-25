@@ -57,15 +57,17 @@ func (l *Listener) EnterFunct(c *parser.FunctContext) {
 	} else {
 		rs := []rune(t)
 		nrs := make([]rune, 0)
-		num := 0
+		esc := false
 		for _, r := range rs {
-			if num == 1 {
-				num = 0
-			}
-			if r == '~' && num == 0 {
-				num = 1
-			} else {
+			if esc {
 				nrs = append(nrs, r)
+				esc = false
+			} else {
+				if r == '~' {
+					esc = true
+				} else {
+					nrs = append(nrs, r)
+				}
 			}
 		}
 		l.Wrap.Funct = types.String(nrs)

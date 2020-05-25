@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/superloach/defunct/module"
 	"github.com/superloach/defunct/types"
@@ -36,9 +35,9 @@ func main() {
 
 	fpath := oargs[0]
 
-	args := make(types.Thing)
+	args := make([]types.Funct, len(oargs))
 	for i, oarg := range oargs {
-		args[strconv.Itoa(i)] = types.String(oarg)
+		args[i] = types.String(oarg)
 	}
 	debugf("%s\n", args)
 
