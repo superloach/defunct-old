@@ -8,12 +8,12 @@ type Cache struct {
 }
 
 func (c *Cache) Load(name string) types.Funct {
-	panic("cache load stub")
+	println("TODO: cache load")
 	return types.Zilch
 }
 
 func (c *Cache) Call(under types.Funct, args []types.Funct) types.Funct {
-	panic("cache call stub")
+	println("TODO: cache call")
 	return types.Zilch
 }
 
@@ -23,16 +23,16 @@ func (c *Cache) GetProp(under types.Funct, name string) types.Funct {
 	}
 
 	if name[0] == '.' {
-		panic("relative import stub")
+		println("TODO: relative import")
 	}
 
-	panic("import stub")
+	println("TODO: import")
 
 	return types.Zilch
 }
 
 func (c *Cache) SetProp(under types.Funct, name string, val types.Funct) types.Funct {
-	panic("cache setprop stub")
+	println("TODO: cache setprop")
 	return types.Zilch
 }
 

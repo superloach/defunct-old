@@ -46,6 +46,10 @@ func LoadModule(
 		dir, err = Stdlib.Open(dirn) // /foo/bar/baz
 	} else {
 		dirn = filepath.Join(strings.Split(mod, "/")...)
+		dirn, err = filepath.EvalSymlinks(dirn)
+		if err != nil {
+			return nil, err
+		}
 		dir, err = os.Open(dirn)
 	}
 	debugf("%s\n", dirn)
@@ -72,7 +76,25 @@ func LoadModule(
 		debugf("fname %s\n", fname)
 
 		fpath := path.Join(dirn, fname)
+		fpath, err = filepath.EvalSymlinks(fpath)
+		if err != nil {
+			debugf("symlink error: %s\n", err)
+			continue
+		}
 		debugf("fpath %s\n", fpath)
+
+		var f http.File
+		if isstd {
+			f, err = Stdlib.Open(fpath)
+			fpath = "@" + fpath[1:]
+		} else {
+			f, err = os.Open(fpath)
+		}
+		if err != nil {
+			return m, err
+		}
+
+		finfo, err = f.Stat()
 
 		if finfo.IsDir() {
 			dm, err := LoadModule(fpath, debugf)
@@ -90,17 +112,6 @@ func LoadModule(
 		name := fname[:len(fname)-3]
 		debugf("name %s\n", name)
 
-		var f http.File
-		if isstd {
-			f, err = Stdlib.Open(fpath)
-			fpath = "@" + fpath[1:]
-		} else {
-			f, err = os.Open(fpath)
-		}
-		if err != nil {
-			return m, err
-		}
-
 		code, err := ioutil.ReadAll(f)
 		if err != nil {
 			return m, err
@@ -114,8 +125,11 @@ func LoadModule(
 
 func (m *Module) Run(args []types.Funct) (types.Funct, error) {
 	under := &types.Under{
-		Arbitrary: types.Thing{},
-		Builtins:  builtins.Builtins,
+		Arbitrary: types.Thing{
+			"in":  types.Zilch,
+			"out": types.Zilch,
+		},
+		Builtins: builtins.Builtins,
 		Modules: &Cache{
 			Module: m,
 			Cache: types.Thing{

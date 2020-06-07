@@ -48,7 +48,8 @@ func main() {
 	if err != nil || info.IsDir() {
 		mod, err = module.LoadModule(fpath, debugf)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		debugf("%s\n", mod)
 	} else {
@@ -57,13 +58,15 @@ func main() {
 
 		f, err := os.Open(fpath)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		debugf("opened %s\n", fpath)
 
 		code, err := ioutil.ReadAll(f)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		debugf("%#v\n", string(code))
 
@@ -84,7 +87,8 @@ func main() {
 	out, err := mod.Run(args)
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	debugf("%s\n", out)

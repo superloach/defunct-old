@@ -36,7 +36,7 @@ func (u *Under) Call(under Funct, args []Funct) Funct {
 func (u *Under) GetProp(under Funct, name string) Funct {
 	u.Debugf("under getprop %#v\n", name)
 
-	if f := u.Arbitrary.GetProp(under, name); name == "in" || name == "out" || f != Zilch {
+	if f, ok := u.Arbitrary[name]; ok {
 		return f
 	}
 

@@ -1,0 +1,2 @@
+_[_ print][_[_ in][0]]
+_[_[_ mod] loop][_[_ concat][_[_ in][0] a]]
