@@ -1,9 +1,0 @@
-_[_ a{Zilch} _[_[_ mod] zilch]]
-_[_ afoo _[_[_ mod] foo]]
-
-_[_ fn _[_ _[_ concat][a _[_ in][1]]]]
-
-_[_ _[_ concat][b _[_ fn]] _[_ fn]]
-_[_ b{Zilch} _[_[_ mod] bad]]
-
-_[_ _[_ concat][b _[_ fn]]][_[_ in][1]]
