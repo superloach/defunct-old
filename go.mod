@@ -1,5 +1,8 @@
 module github.com/superloach/defunct
 
-go 1.14
+go 1.15
 
-require github.com/alecthomas/participle v0.6.0
+require (
+	github.com/kr/pretty v0.2.1
+	github.com/pkg/errors v0.9.1
+)
