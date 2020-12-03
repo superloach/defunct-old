@@ -1,9 +1,9 @@
 package parse
 
 import (
+	"errors"
+	"fmt"
 	"io"
-
-	"github.com/pkg/errors"
 )
 
 var (
@@ -22,7 +22,7 @@ func (p *Parse) Section(start, end rune) (*Section, error) {
 			return nil, ErrNoSection
 		}
 
-		return nil, errors.Wrap(err, "peek")
+		return nil, fmt.Errorf("skip peek: %w", err)
 	}
 
 	if r != start {
@@ -31,9 +31,11 @@ func (p *Parse) Section(start, end rune) (*Section, error) {
 
 	p.incr()
 
-	m, err := p.Module("")
+	const name = ""
+
+	m, err := p.Module(name)
 	if err != nil {
-		return nil, errors.Wrap(err, "module")
+		return nil, fmt.Errorf("module %q: %w", name, err)
 	}
 
 	m.Loc = loc
@@ -44,7 +46,7 @@ func (p *Parse) Section(start, end rune) (*Section, error) {
 			return nil, ErrCloseSection
 		}
 
-		return nil, errors.Wrap(err, "peek")
+		return nil, fmt.Errorf("skip peek: %w", err)
 	}
 
 	if r != end {

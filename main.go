@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 
 	"github.com/superloach/defunct/parse"
@@ -27,7 +28,7 @@ func main() {
 	if file != stdin {
 		f, err := os.Open(file)
 		if err != nil {
-			println("open", err)
+			fmt.Println("open", err)
 			os.Exit(1)
 		}
 
@@ -38,7 +39,7 @@ func main() {
 
 	m, err := p.Module(file)
 	if err != nil {
-		println("parse error:", err)
+		fmt.Println("parse error:", err)
 		os.Exit(2)
 	}
 
@@ -47,11 +48,11 @@ func main() {
 
 	ret, err := u.Run((*run.Module)(m))
 	if err != nil {
-		println(err)
+		fmt.Println(err)
 		os.Exit(3)
 	}
 
 	if ret != run.Zilch {
-		println(ret)
+		fmt.Println(ret)
 	}
 }

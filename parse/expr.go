@@ -1,7 +1,8 @@
 package parse
 
 import (
-	"github.com/pkg/errors"
+	"errors"
+	"fmt"
 )
 
 var ErrNoExpr = errors.New("no expr")
@@ -18,7 +19,7 @@ func (p *Parse) Expr() (*Expr, error) {
 			return nil, ErrNoExpr
 		}
 
-		return nil, errors.Wrap(err, "literal")
+		return nil, fmt.Errorf("literal: %w", err)
 	}
 
 	e := &Expr{
@@ -32,7 +33,7 @@ func (p *Parse) Expr() (*Expr, error) {
 				return e, nil
 			}
 
-			return nil, errors.Wrap(err, "arguments")
+			return nil, fmt.Errorf("arguments: %w", err)
 		}
 
 		e.Arguments = append(e.Arguments, as)

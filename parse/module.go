@@ -1,9 +1,9 @@
 package parse
 
 import (
+	"errors"
+	"fmt"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 type Module struct {
@@ -26,7 +26,7 @@ func (p *Parse) Module(name string) (*Module, error) {
 				return m, nil
 			}
 
-			return nil, errors.Wrap(err, "expr")
+			return nil, fmt.Errorf("expr: %w", err)
 		}
 
 		m.Exprs = append(m.Exprs, e)

@@ -1,9 +1,8 @@
 package run
 
 import (
+	"fmt"
 	"strconv"
-
-	"github.com/pkg/errors"
 )
 
 type Numberer interface {
@@ -17,9 +16,11 @@ func NumberOf(f Funct) (Number, error) {
 		return n.Number()
 	}
 
-	i, err := strconv.Atoi(f.String())
+	s := f.String()
+
+	i, err := strconv.Atoi(s)
 	if err != nil {
-		return 0, errors.Wrap(err, "atoi")
+		return 0, fmt.Errorf("atoi %q: %w", s, err)
 	}
 
 	return Number(i), nil

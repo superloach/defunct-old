@@ -1,10 +1,10 @@
 package parse
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 var ErrNoLiteral = errors.New("no literal")
@@ -22,7 +22,7 @@ func (p *Parse) Literal() (*Literal, error) {
 			return nil, ErrNoLiteral
 		}
 
-		return nil, errors.Wrap(err, "peek")
+		return nil, fmt.Errorf("skip peek: %w", err)
 	}
 
 	switch {
@@ -33,7 +33,7 @@ func (p *Parse) Literal() (*Literal, error) {
 				return nil, ErrNoLiteral
 			}
 
-			return nil, errors.Wrap(err, "block")
+			return nil, fmt.Errorf("block: %w", err)
 		}
 
 		return &Literal{
@@ -54,7 +54,7 @@ func (p *Parse) Literal() (*Literal, error) {
 				return nil, ErrNoLiteral
 			}
 
-			return nil, errors.Wrap(err, "token")
+			return nil, fmt.Errorf("text: %w", err)
 		}
 
 		return &Literal{

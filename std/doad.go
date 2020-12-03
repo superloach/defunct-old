@@ -1,7 +1,7 @@
 package std
 
 import (
-	"github.com/pkg/errors"
+	"errors"
 
 	"github.com/superloach/defunct/run"
 )

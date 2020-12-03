@@ -1,7 +1,7 @@
 package std
 
 import (
-	"github.com/pkg/errors"
+	"fmt"
 
 	"github.com/superloach/defunct/run"
 )
@@ -24,7 +24,7 @@ func (p Print) Call(u *run.Under, in run.Queue) (run.Funct, error) {
 
 		_, err := u.W.Write(bs)
 		if err != nil {
-			return nil, errors.Wrap(err, "write")
+			return nil, fmt.Errorf("write %q: %w", bs, err)
 		}
 	}
 

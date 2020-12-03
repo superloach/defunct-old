@@ -1,7 +1,7 @@
 package run
 
 import (
-	"github.com/pkg/errors"
+	"fmt"
 
 	"github.com/superloach/defunct/parse"
 )
@@ -12,7 +12,7 @@ func Arguments(as *parse.Arguments, u *Under) (Queue, error) {
 	for i, e := range as.Exprs {
 		f, err := Expr(e, u)
 		if err != nil {
-			return nil, errors.Wrap(err, "argument")
+			return nil, fmt.Errorf("expr %q: %w", e, err)
 		}
 
 		q[i] = f

@@ -1,9 +1,9 @@
 package parse
 
 import (
+	"errors"
+	"fmt"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 var ErrNoBlock = errors.New("no block")
@@ -17,7 +17,7 @@ func (p *Parse) Block() (*Block, error) {
 			return nil, ErrNoBlock
 		}
 
-		return nil, errors.Wrap(err, "section")
+		return nil, fmt.Errorf("section %q %q: %w", RuneStart, RuneEnd, err)
 	}
 
 	b := (*Block)(s)

@@ -1,10 +1,10 @@
 package parse
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 var (
@@ -33,7 +33,7 @@ func (p *Parse) text() ([]rune, error) {
 		}
 
 		if err != nil {
-			return nil, errors.Wrap(err, "peek")
+			return nil, fmt.Errorf("peek: %w", err)
 		}
 
 		p.incr()
@@ -45,7 +45,7 @@ func (p *Parse) text() ([]rune, error) {
 					return nil, ErrIncompEscape
 				}
 
-				return nil, errors.Wrap(err, "peek")
+				return nil, fmt.Errorf("peek: %w", err)
 			}
 
 			if !strings.ContainsRune(StringEscape, n) {
@@ -64,7 +64,7 @@ func (p *Parse) text() ([]rune, error) {
 func (p *Parse) Text() (Text, error) {
 	t, err := p.text()
 	if err != nil {
-		return nil, errors.Wrap(err, "text")
+		return nil, fmt.Errorf("text: %w", err)
 	}
 
 	if len(t) == 0 {

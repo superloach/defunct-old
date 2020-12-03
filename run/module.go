@@ -1,7 +1,7 @@
 package run
 
 import (
-	"github.com/pkg/errors"
+	"fmt"
 
 	"github.com/superloach/defunct/parse"
 )
@@ -22,7 +22,7 @@ func (u *Under) Run(m *Module) (Funct, error) {
 	for _, e := range m.Exprs {
 		ret, err = Expr(e, u)
 		if err != nil {
-			return nil, errors.Wrap(err, "expr")
+			return nil, fmt.Errorf("expr %q: %w", e, err)
 		}
 	}
 

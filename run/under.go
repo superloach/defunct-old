@@ -1,9 +1,8 @@
 package run
 
 import (
+	"errors"
 	"io"
-
-	"github.com/pkg/errors"
 )
 
 var ErrUnknownStd = errors.New("unknown std funct")

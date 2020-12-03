@@ -1,9 +1,9 @@
 package parse
 
 import (
+	"errors"
+	"fmt"
 	"strings"
-
-	"github.com/pkg/errors"
 )
 
 var ErrNoArguments = errors.New("no arguments")
@@ -17,7 +17,7 @@ func (p *Parse) Arguments() (*Arguments, error) {
 			return nil, ErrNoArguments
 		}
 
-		return nil, errors.Wrap(err, "section")
+		return nil, fmt.Errorf("section %q %q: %w", RuneOpen, RuneClose, err)
 	}
 
 	as := (*Arguments)(s)
